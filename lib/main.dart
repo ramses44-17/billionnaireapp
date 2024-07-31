@@ -1,3 +1,5 @@
+import 'package:billionnaireapp/addmoneybutton.dart';
+import 'package:billionnaireapp/balancepart.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,13 +16,13 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   double balance = 0;
-  void addMoney() {
-    setState(() async {
+  void addMoney() async {
+    setState(() {
       balance = balance + 500;
-      // Obtain shared preferences.
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setDouble('balance', balance);
     });
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('balance', balance);
   }
 
   void loadBalance() async {
@@ -28,6 +30,12 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       balance = prefs.getDouble('balance') ?? 0;
     });
+  }
+
+  @override
+  void initState() {
+    loadBalance();
+    super.initState();
   }
 
   @override
@@ -48,28 +56,8 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                flex: 9,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('bank balance: '),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text('$balance')
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red[700],
-                        minimumSize: const Size(double.infinity, 0)),
-                    onPressed: addMoney,
-                    child: const Text('Add oney')),
-              )
+             BalanceView(balance: balance,),
+              AddMoneyButton(addMoneyFunction: addMoney,)
             ],
           ),
         ),
